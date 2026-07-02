@@ -18,7 +18,36 @@ const supabase = createClient(
   process.env.SUPABASE_KEY,
 );
 
-function autenticarToken(req, res, next) {
+async function cadastrarCliente() {                             // cadastrar cliente no supabase, 
+  console.log("Cadastro de clientes!");            
+  let nome = prompt(" Digite seu nome: ");
+  let cpf = prompt(" Digite seu CPF: ");
+  let email = prompt(" Digite o email: ");
+  let telefone = prompt(" Digite seu número de telefone: ");
+  let dataCadastro = prompt(" Data de cadastro: ");
+  let endereco = prompt(" Digite seu endereço: ");
+  let senha = prompt(" Digite sua senha: ");
+
+  let saltRounds = 7; // número de rounds para gerar o salt, quanto maior, mais seguro, mas também mais lento
+  let senhaCrip = await bcrypt.hash(senha, saltRounds);          // criptografando a senha com bcrypt
+
+  let cadastrarCliente = {
+    nome: nome,
+    cpf: cpf,
+    telefone: telefone,
+    endereco: endereco,
+    senha: senhaCrip,
+  };
+  const { data, error } = await supabase
+    .from("banco_clientes") // banco clientes
+    .insert(cadastrarCliente)
+    .select();
+
+  console.log(data);
+  console.log(error);
+}
+
+function autenticarToken(req, res, next) {                        // autenticar token jwt
   const authHeader = req.headers.authorization;
   if (!authHeader) {
     return res.status(401).json({ erro: "Token não enviado" });
@@ -85,13 +114,28 @@ app.post("/login", async (req, res) => {
   });
 });
 
-app.get("/funcionario", (req, res) => {
-  res.json({ msg: 'pagina funcionario' });
+app.get("/funcionario", autenticarToken, (req, res) => {
+  if (req.usuario.tipo !== "funcionario") {
+    return res.status(403).json({ erro: "Acesso negado" });
+  }
+
+  return res.json({
+    msg: "pagina funcionario",
+    usuario: req.usuario,
+  });
 });
 
-app.get("/cliente", (req, res) => {
-  res.json({ msg: 'pagina cliente' });
+app.get("/cliente", autenticarToken, (req, res) => {
+  if (req.usuario.tipo !== "cliente") {
+    return res.status(403).json({ erro: "Acesso negado" });
+  }
+
+  return res.json({
+    msg: "pagina cliente",
+    usuario: req.usuario,
+  });
 });
+
 
 app.listen(PORT, () => {
   console.log(`Servidor rodando em http://localhost:${PORT}`);

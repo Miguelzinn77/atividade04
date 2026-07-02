@@ -1,4 +1,4 @@
-import "./App.css";
+// import "./App.css";
 import Login from "./pages/Login";
 import Funcionario from "./pages/Funcionario";
 import Cliente from "./pages/Cliente";
