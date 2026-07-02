@@ -33,7 +33,7 @@ const Login = () => {
 
       if (dados.usuario.tipo === "funcionario") {
         navigate("/funcionario");
-      } else {
+      } else if(dados.usuario.tipo === "cliente") {
         navigate("/cliente");
       }
     } catch (error) {
