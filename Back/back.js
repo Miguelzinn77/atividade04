@@ -11,7 +11,7 @@ app.use(express.json());
 app.use(cors());
 
 const JWT_SENHA = process.env.JWT_SENHA || "senha-secreta";
-const PORT = process.env.PORT || 3000;
+const PORT = 3000;
 
 const supabase = createClient(
   process.env.SUPABASE_URL,
@@ -85,8 +85,12 @@ app.post("/login", async (req, res) => {
   });
 });
 
-app.get("/teste", (req, res) => {
-  res.json({ ok: true });
+app.get("/funcionario", (req, res) => {
+  res.json({ msg: 'pagina funcionario' });
+});
+
+app.get("/cliente", (req, res) => {
+  res.json({ msg: 'pagina cliente' });
 });
 
 app.listen(PORT, () => {
